@@ -1,0 +1,185 @@
+#:import get_color_from_hex kivy.utils.get_color_from_hex
+#:import dp kivy.metrics.dp
+
+<Icon@Label>:
+    # --- THE DEFINITIVE FIX ---
+    font_name: 'FontAwesome' # Use the registered font name
+    font_size: '14sp'
+    color: 1, 1, 1, 1
+
+<ControlButton@Button>:
+    background_color: 0, 0, 0, 0
+    size_hint: None, None
+    size: dp(36), dp(36)
+
+<PlayerLayout>:
+    video: video_player
+    controls: controls_panel
+
+    canvas.before:
+        Color:
+            rgba: 0, 0, 0, 1
+        Rectangle:
+            pos: self.pos
+            size: self.size
+
+    Video:
+        id: video_player
+        on_eos: root.on_video_eos(*args)
+        on_state: root.on_video_state_change(*args)
+        on_source: root.on_video_source_change(*args)
+        allow_stretch: True
+        keep_ratio: True
+        options: {'eos': 'stop', 'hw_accel': 'auto', 'threads': 0, 'err_detect': 'ignore_err', 'fflags': 'fastseek', 'probesize': '5M'}
+
+    # --- Welcome Screen ---
+    FloatLayout:
+        opacity: 1 if root.view_mode == 'welcome' else 0
+        disabled: root.view_mode != 'welcome'
+        canvas.before:
+            Color:
+                rgba: get_color_from_hex('#1a1a1a') if root.view_mode == 'welcome' else (0,0,0,0)
+            Rectangle:
+                pos: self.pos
+                size: self.size
+        BoxLayout:
+            orientation: 'vertical'
+            spacing: 15
+            size_hint: .5, .5
+            pos_hint: {'center_x': .5, 'center_y': .5}
+            Icon:
+                text: '\uf008'
+                font_size: '80sp'
+                color: .3, .3, .3, 1
+            Label:
+                text: 'KV Player'
+                font_size: '50sp'
+                bold: True
+            Label:
+                text: 'Drop a media file here or click below'
+                font_size: '16sp'
+                color: .5, .5, .5, 1
+            Button:
+                text: '  \uf07c  Select File'
+                # --- THE DEFINITIVE FIX ---
+                font_name: 'FontAwesome' # Use the registered font name
+                font_size: '16sp'
+                size_hint: None, None
+                size: self.texture_size[0] + dp(40), dp(48)
+                pos_hint: {'center_x': .5}
+                background_color: 0, 0, 0, 0
+                on_release: root.open_file_dialog()
+                canvas.before:
+                    Color:
+                        rgba: get_color_from_hex('#0078d4cc') if self.state == 'normal' else get_color_from_hex('#005a9e')
+                    RoundedRectangle:
+                        pos: self.pos
+                        size: self.size
+                        radius: [dp(8)]
+            Label:
+                text: root.error_message
+                color: 1, 0.2, 0.2, 1
+                size_hint_y: None
+                height: self.texture_size[1]
+                opacity: 1 if root.error_message else 0
+                padding: (dp(10), dp(20))
+
+    # --- MINIMALIST BOTTOM PLAYER CONTROLS ---
+    BoxLayout:
+        id: controls_panel
+        orientation: 'vertical'
+        size_hint_y: None
+        height: dp(40)
+        pos_hint: {'x': 0}
+        y: -self.height
+        opacity: 1 if root.view_mode == 'player' else 0
+        disabled: root.view_mode != 'player'
+        canvas.before:
+            Color:
+                rgba: 0.1, 0.1, 0.1, 0.85
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        Slider:
+            id: position_slider
+            min: 0
+            max: 1
+            step: 0
+            value_normalized: 0
+            size_hint_y: None
+            height: dp(10)
+            padding: 0
+            on_touch_down: root.is_slider_touched = True
+            on_touch_up: root.is_slider_touched = False; root.seek(self.value_normalized) if self.collide_point(*args[0].pos) else None
+            background_horizontal: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII='
+            cursor_size: 0, 0
+            canvas.before:
+                Color:
+                    rgba: 0.5, 0.5, 0.5, 0.3
+                Rectangle:
+                    pos: self.x, self.center_y - dp(1)
+                    size: self.width, dp(2)
+                Color:
+                    rgba: get_color_from_hex('#0099ff')
+                Rectangle:
+                    pos: self.x, self.center_y - dp(1)
+                    size: self.value_pos[0] - self.x, dp(2)
+
+        BoxLayout:
+            padding: dp(5), 0
+            spacing: dp(5)
+            Label:
+                text: root.current_time_str + " / " + root.total_time_str
+                font_size: '12sp'
+                size_hint_x: None
+                width: self.texture_size[0] + dp(10)
+            Widget:
+            ControlButton:
+                on_release: root.seek_relative(-10)
+                Icon:
+                    text: '\uf0e2'
+                    center: self.parent.center
+            ControlButton:
+                on_release: root.toggle_play_pause()
+                size: dp(40), dp(36)
+                Icon:
+                    text: '\uf04c' if root.is_playing else '\uf04b'
+                    font_size: '20sp'
+                    center: self.parent.center
+            ControlButton:
+                on_release: root.seek_relative(10)
+                Icon:
+                    text: '\uf01e'
+                    center: self.parent.center
+            Widget:
+            ControlButton:
+                on_release: root.open_audio_track_menu(self)
+                disabled: len(root.audio_tracks) <= 1
+                opacity: 1 if len(root.audio_tracks) > 1 else 0
+                Icon:
+                    text: '\uf001' # fa-music
+                    center: self.parent.center
+            ControlButton:
+                on_release: root.toggle_mute()
+                Icon:
+                    text: root.volume_icon
+                    center: self.parent.center
+            Slider:
+                id: volume_slider
+                min: 0
+                max: 1
+                value: 1.0
+                on_value: root.on_volume_change(self.value)
+                size_hint: None, 1
+                width: dp(70)
+            ControlButton:
+                on_release: root.toggle_fullscreen()
+                Icon:
+                    text: '\uf066' if root.is_fullscreen else '\uf065'
+                    center: self.parent.center
+            ControlButton:
+                on_release: root.open_file_dialog()
+                Icon:
+                    text: '\uf07c'
+                    center: self.parent.center

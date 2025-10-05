@@ -1,0 +1,7 @@
+('C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python311\\share\\glew\\bin',
+ 'glew',
+ [],
+ 'DATA',
+ [('glew\\glew32.dll',
+   'C:\\Users\\Admin\\AppData\\Local\\Programs\\Python\\Python311\\share\\glew\\bin\\glew32.dll',
+   'DATA')])
