@@ -6,9 +6,10 @@
 
 A modern, high-performance, cross-platform media player built with Python and the Kivy framework. It leverages the robust FFpyplayer backend to deliver smooth playback and fast seeking without external dependency headaches.
 
-![KV Player Screenshot](screenshot.png)
-*(Replace `screenshot.png` with a real screenshot of your application)*
+![KV Player Screenshot](Screenshot1.png)
 
+
+![KV Player Screenshot](Screenshot2.png)
 ---
 
 ## ✨ Key Features
