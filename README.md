@@ -36,3 +36,36 @@ To run the player from the source code, you'll need Python 3.9+ and the required
 ```bash
 git clone https://github.com/your-username/your-repo-name.git
 cd your-repo-name
+```
+2. Create a requirements.txt file:
+Create a file named requirements.txt in your project folder with the following content:
+```
+kivy
+ffpyplayer
+plyer
+pyinstaller
+```
+## 📦 Building an Executable
+This project is configured for easy packaging into a single executable file using PyInstaller. The KVPlayer.spec file is universal for Windows, macOS, and Linux.
+You must run the build command on the target operating system.
+Prerequisites:
+ * Make sure you have an icon file in your project directory (icon.ico for Windows, icon.icns for macOS).
+ * Ensure all dependencies from requirements.txt are installed.
+Build Command:
+Open a terminal in the project directory and run:
+```
+pyinstaller KVPlayer.spec
+```
+## The final, self-contained application will be located in the dist folder:
+ * Windows: dist/KVPlayer.exe
+ * macOS: dist/KVPlayer.app
+ * Linux: dist/KVPlayer
+## 🛠️ Main Dependencies
+Kivy: For the cross-platform graphical user interface.
+FFpyplayer: A Kivy-compatible video/audio player backend using the powerful FFmpeg library.
+Plyer: For accessing native platform features like the file selection dialog.
+PyInstaller: For packaging the application into a standalone executable.
+Font Awesome: For the modern icons used in the UI.
+
+## 📜 License
+This project is licensed under the MIT License - see the LICENSE.md file for details.
