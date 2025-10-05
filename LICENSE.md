@@ -1,4 +1,4 @@
-Copyright (c) 2025 [Your Name or GitHub Username]
+Copyright (c) 2025 rahulkuzur3
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
