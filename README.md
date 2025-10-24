@@ -30,10 +30,10 @@ Engineered for **creators, developers, and enthusiasts** who demand **speed, pre
 
 | 🧭 Platform | 💾 Status | 📥 Download |
 |:------------|:-----------|:-------------|
-| 🪟 **Windows (.exe)** | ✅ Released | [Download Latest Release](https://github.com/rahulkuzur3/KVPlayer/releases/download/v1.0.0/KVPlayer-v1.0.0-Windows.exe) |
-| 🐧 **Linux (.AppImage / .deb)** | 🔧 In Development | — |
-| 🍎 **macOS (.app)** | ⏳ Coming Soon | — |
-| 🤖 **Android (.apk)** | ⏳ Coming Soon | — |
+| 🪟 **Windows** | ✅ Released | [Download Latest Release](https://github.com/rahulkuzur3/KVPlayer/releases/download/v1.0.0/KVPlayer-v1.0.0-Windows.exe) |
+| 🐧 **Linux** | ✅ Released | [ubuntu/debian](#)<br>[Snap](#)<br>[Arch](#)<br>[Fedora/Red Hat](#) |
+| 🍎 **macOS** | ⏳ Coming Soon | — |
+| 🤖 **Android** | ⏳ Coming Soon | — |
 > Cross-platform support is a core goal — seamless playback on every device.
 ---
 
