@@ -2,9 +2,8 @@
 
 block_cipher = None
 
-# --- IMPORTANT ---
 # This path is generated from your 'pip show kivy' output.
-kivy_hooks_path = 'C:\\Users\\Labib\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\kivy\\tools\\pyinstaller\\hooks' # <--- THIS IS YOUR PATH
+kivy_hooks_path = 'C:\\Users\\Labib\\AppData\\Local\\Programs\\Python\\Python311\\Lib\\site-packages\\kivy\\tools\\pyinstaller\\hooks'
 
 a = Analysis(
     ['main.py'],
@@ -16,7 +15,7 @@ a = Analysis(
         ('icon.png', '.')
     ],
     hiddenimports=['plyer.platforms.win.filechooser'],
-    hookspath=[kivy_hooks_path],  # <--- Use the path here
+    hookspath=[kivy_hooks_path],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
@@ -31,11 +30,14 @@ pyz = PYZ(
     cipher=block_cipher
 )
 
+# The EXE block now defines the final one-file bundle.
 exe = EXE(
     pyz,
     a.scripts,
+    a.binaries,   # <-- Add binaries here
+    a.zipfiles,   # <-- Add zipfiles here
+    a.datas,      # <-- Add datas here
     [],
-    exclude_binaries=True,
     name='KVPlayer',
     debug=False,
     bootloader_ignore_signals=False,
@@ -48,16 +50,17 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
-    icon='icon.ico' # It's best to use a .ico file for Windows icons
+    icon='icon.ico'
 )
 
-coll = COLLECT(
-    exe,
-    a.binaries,
-    a.zipfiles,
-    a.datas,
-    strip=False,
-    upx=True,
-    upx_exclude=[],
-    name='KVPlayer'
-)
+# --- The COLLECT block has been removed ---
+# coll = COLLECT(
+#     exe,
+#     a.binaries,
+#     a.zipfiles,
+#     a.datas,
+#     strip=False,
+#     upx=True,
+#     upx_exclude=[],
+#     name='KVPlayer'
+# )
