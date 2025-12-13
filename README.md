@@ -30,8 +30,8 @@ Engineered for **creators, developers, and enthusiasts** who demand **speed, pre
 
 | 🧭 Platform | 💾 Status | 📥 Download |
 |:------------|:-----------|:-------------|
-| 🪟 **Windows** | ✅ Released | [Download Latest Release](https://github.com/rahulkuzur3/KVPlayer/releases/download/v1.0.0/KVPlayer-v1.0.0-Windows.exe) |
-| 🐧 **Linux** | ✅ Released | [ubuntu/debian](#)<br>[Snap](#)<br>[Arch](#)<br>[Fedora/Red Hat](#) |
+| 🪟 **Windows** | ✅ Released | [![Get it from the Snap Store](https://kvplayer.site/Windows.svg)](https://snapcraft.io/kvplayer)  |
+| 🐧 **Linux** | ✅ Released | [![Get it from the Snap Store](https://kvplayer.site/Debian.svg)](https://snapcraft.io/kvplayer) <br><br><br> <br>[![Get it from the Snap Store](https://snapcraft.io/en/light/install.svg)](https://snapcraft.io/kvplayer)<br> <br>[![Get it from the Snap Store](https://kvplayer.site/Ubuntu.svg)](https://snapcraft.io/kvplayer) |
 | 🍎 **macOS** | ⏳ Coming Soon | — |
 | 🤖 **Android** | ⏳ Coming Soon | — |
 > Cross-platform support is a core goal — seamless playback on every device.
