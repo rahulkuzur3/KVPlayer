@@ -1,0 +1,368 @@
+import { Slider, Button } from "std-widgets.slint";
+
+export component MainWindow inherits Window {
+    title: "KV Player";
+    preferred-width: 900px;
+    preferred-height: 550px;
+    background: #18181b; 
+
+    // UI Callbacks linked to Rust
+    callback play_pause_clicked();
+    callback open_file_clicked();
+    callback seek_requested(float);
+    callback volume_changed(float);
+    callback skip_back_clicked();
+    callback skip_forward_clicked();
+    callback fullscreen_clicked();
+    callback key_pressed(string);
+
+    // Bindable properties
+    in-out property <image> video_frame;
+    in property <string> time_display: "00:00 / 00:00";
+    in-out property <float> progress: 0.0;
+    in-out property <bool> is_playing: false;
+    in-out property <float> volume: 0.8;
+    in property <string> now_playing_title: "No Media Loaded";
+
+    // Focus state to handle hotkeys
+    forward-focus: key_handler;
+    key_handler := FocusScope {
+        key-pressed(event) => {
+            root.key_pressed(event.text);
+            return accept;
+        }
+    }
+
+    init => {
+        key_handler.focus();
+    }
+
+    VerticalLayout {
+        padding: 0px;
+        spacing: 0px;
+
+        // Main Video / Landing Workspace
+        Rectangle {
+            background: #121212;
+            
+            Image {
+                width: 100%;
+                height: 100%;
+                source: root.video_frame;
+                image-fit: contain;
+            }
+
+            // Landing State (Recreated to match your photo exactly)
+            if root.now_playing_title == "No Media Loaded" : Rectangle {
+                background: #18181b;
+                
+                VerticalLayout {
+                    alignment: center;
+                    spacing: 24px; // Spacing matches the proportions in your photo
+                    
+                    // Rebuilt Vector Film Reel Icon from your photo
+                    Rectangle {
+                        width: 72px;
+                        height: 72px;
+                        background: #27272a;
+                        border-radius: 12px;
+                        x: (parent.width - self.width) / 2;
+                        
+                        // Film sprocket holes recreation
+                        VerticalLayout {
+                            alignment: space-around;
+                            padding-top: 8px;
+                            padding-bottom: 8px;
+                            for i in [1, 2, 3, 4] : HorizontalLayout {
+                                alignment: space-between;
+                                padding-left: 6px;
+                                padding-right: 6px;
+                                Rectangle { width: 8px; height: 8px; background: #18181b; border-radius: 2px; }
+                                Rectangle { width: 8px; height: 8px; background: #18181b; border-radius: 2px; }
+                            }
+                        }
+                        // Inner dark core frame
+                        Rectangle {
+                            width: 30px;
+                            height: 44px;
+                            background: #18181b;
+                            border-radius: 4px;
+                        }
+                    }
+
+                    // Large Title
+                    Text {
+                        text: "KV Player";
+                        font-size: 42px;
+                        font-weight: 700;
+                        color: #ffffff;
+                        horizontal-alignment: center;
+                    }
+
+                    // Gray subtitle description
+                    Text {
+                        text: "Drop a media file here or click below";
+                        font-size: 14px;
+                        color: #71717a;
+                        horizontal-alignment: center;
+                    }
+
+                    // Blue rounded Select button with custom folder on left, SELECT text, and file icon on right
+                    Rectangle {
+                        width: 170px;
+                        height: 44px;
+                        background: #025cbe; // Vibrant flat blue
+                        border-radius: 6px; // Standard rounded corners to match your photo
+                        x: (parent.width - self.width) / 2;
+                        
+                        TouchArea {
+                            clicked => { root.open_file_clicked(); }
+                        }
+                        
+                        HorizontalLayout {
+                            alignment: center;
+                            spacing: 10px;
+                            
+                            // Yellow folder icon asset
+                            Image {
+                                source: @image-url("assets/folder.png");
+                                width: 16px;
+                                height: 16px;
+                                image-fit: contain;
+                                vertical-alignment: center;
+                            }
+                            Text {
+                                text: "SELECT";
+                                color: #ffffff;
+                                font-size: 15px;
+                                font-weight: 700;
+                                vertical-alignment: center;
+                            }
+                            // Document icon asset on the right
+                            Text {
+                                text: "📄";
+                                font-size: 16px;
+                                color: #ffffff;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Controls Area (Timeline + Bottom Row)
+        VerticalLayout {
+            spacing: 0px;
+
+            // Flat Timeline Seekbar (Sleek 4px visual height, large 24px invisible click-box)
+            Rectangle {
+                height: 4px; 
+                background: #3f3f46;
+                
+                // Progress bar fill
+                Rectangle {
+                    x: 0px;
+                    width: parent.width * root.progress;
+                    background: #025cbe;
+                }
+                
+                // Larger invisible bounding box for effortless scroll-grabbing
+                TouchArea {
+                    width: 100%;
+                    height: 24px;
+                    y: (parent.height - self.height) / 2;
+                    
+                    moved => {
+                        if (self.pressed) {
+                            let val = Math.max(0.0, Math.min(1.0, (self.mouse-x / 1px) / (self.width / 1px)));
+                            root.progress = val; 
+                            root.seek_requested(val);
+                        }
+                    }
+                    clicked => {
+                        let val = Math.max(0.0, Math.min(1.0, (self.pressed-x / 1px) / (self.width / 1px)));
+                        root.progress = val; 
+                        root.seek_requested(val);
+                    }
+                }
+            }
+
+            // Bottom controls container
+            Rectangle {
+                height: 64px;
+                background: #121212;
+
+                HorizontalLayout {
+                    padding-left: 20px;
+                    padding-right: 20px;
+                    alignment: space-between;
+
+                    // Left Side: Time tracker
+                    Text {
+                        text: root.time_display;
+                        color: #ffffff;
+                        font-size: 13px;
+                        vertical-alignment: center;
+                        width: 180px;
+                    }
+
+                    // Center Control Row (With responsive skip buttons)
+                    HorizontalLayout {
+                        spacing: 16px;
+                        alignment: center;
+
+                        // Skip Back Button
+                        TouchArea {
+                            width: 32px;
+                            height: 32px;
+                            clicked => { root.skip_back_clicked(); }
+                            
+                            Image {
+                                source: @image-url("assets/backward.png");
+                                width: 22px;
+                                height: 22px;
+                                image-fit: contain;
+                                colorize: #a1a1aa; 
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        // Play/Pause Button
+                        TouchArea {
+                            width: 36px;
+                            height: 36px;
+                            clicked => { 
+                                root.is_playing = !root.is_playing; 
+                                root.play_pause_clicked(); 
+                            }
+                            
+                            Image {
+                                source: root.is_playing ? @image-url("assets/pause.png") : @image-url("assets/play.png");
+                                width: 26px;
+                                height: 26px;
+                                image-fit: contain;
+                                colorize: #ffffff; 
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        // Skip Forward Button
+                        TouchArea {
+                            width: 32px;
+                            height: 32px;
+                            clicked => { root.skip_forward_clicked(); }
+                            
+                            Image {
+                                source: @image-url("assets/forward.png");
+                                width: 22px;
+                                height: 22px;
+                                image-fit: contain;
+                                colorize: #a1a1aa; 
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+
+                    // Right Side utilities (Volume Scrolling, Fullscreen, Open Folder)
+                    HorizontalLayout {
+                        spacing: 16px;
+                        alignment: end;
+                        width: 250px;
+
+                        // Volume icon
+                        Text {
+                            text: "🔊";
+                            font-size: 16px;
+                            color: #a1a1aa;
+                            vertical-alignment: center;
+                        }
+
+                        // Custom Volume slider (Sleek 4px visuals, large 32px invisible click-box)
+                        Rectangle {
+                            width: 80px;
+                            height: 4px;
+                            background: #3f3f46;
+                            y: (parent.height - self.height) / 2;
+                            
+                            // Blue volume fill
+                            Rectangle {
+                                x: 0px;
+                                width: parent.width * root.volume;
+                                background: #025cbe;
+                            }
+
+                            // Blue thumb knob with white border matching Image 2
+                            Rectangle {
+                                x: (parent.width * root.volume) - (self.width / 2);
+                                y: (parent.height - self.height) / 2;
+                                width: 14px;
+                                height: 14px;
+                                border-radius: 7px;
+                                background: #025cbe;
+                                border-width: 1.5px;
+                                border-color: #ffffff;
+                            }
+
+                            // Invisible touch overlay for seamless volume dragging
+                            TouchArea {
+                                width: 100%;
+                                height: 32px;
+                                y: (parent.height - self.height) / 2;
+                                
+                                moved => {
+                                    if (self.pressed) {
+                                        let val = Math.max(0.0, Math.min(1.0, (self.mouse-x / 1px) / (self.width / 1px)));
+                                        root.volume = val; 
+                                        root.volume_changed(val);
+                                    }
+                                }
+                                clicked => {
+                                    let val = Math.max(0.0, Math.min(1.0, (self.pressed-x / 1px) / (self.width / 1px)));
+                                    root.volume = val; 
+                                    root.volume_changed(val);
+                                }
+                            }
+                        }
+
+                        // Fullscreen toggle button
+                        TouchArea {
+                            width: 32px;
+                            height: 32px;
+                            clicked => { root.fullscreen_clicked(); }
+                            
+                            Image {
+                                source: @image-url("assets/fullscreen.png");
+                                width: 20px;
+                                height: 20px;
+                                image-fit: contain;
+                                colorize: #ffffff; 
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+
+                        // Load Folder button
+                        TouchArea {
+                            width: 32px;
+                            height: 32px;
+                            clicked => { root.open_file_clicked(); }
+                            
+                            Image {
+                                source: @image-url("assets/folder.png");
+                                width: 18px;
+                                height: 18px;
+                                image-fit: contain;
+                                horizontal-alignment: center;
+                                vertical-alignment: center;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

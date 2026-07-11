@@ -1,0 +1,18 @@
+[package]
+name = "kvplayer"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+slint = "1.9"
+ffmpeg-next = "8.1"
+rfd = "0.15" # Native system file dialogs
+lazy_static = "1.4"
+rodio = "0.17" 
+
+[build-dependencies]
+slint-build = "1.9"
+
+[env]
+FFMPEG_DIR = "F:\\vcpkg\\installed\\x64-windows"
+LIBCLANG_PATH = "C:\\Program Files\\LLVM\\bin"
