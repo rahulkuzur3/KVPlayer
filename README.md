@@ -21,7 +21,7 @@
 
 ## 🌟 A Foundation of Excellence
 
-Built from the ground up with **Python**, **Kivy**, and **FFmpeg**, this player redefines performance and simplicity.  
+Built from the ground up with **Rust**, **Slint**, and **FFmpeg**, this player redefines performance and simplicity.  
 Engineered for **creators, developers, and enthusiasts** who demand **speed, precision, and clarity**.
 
 ---
